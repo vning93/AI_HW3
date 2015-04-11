@@ -1,0 +1,19 @@
+Test Cases:
+
+1) If offer’s utility to me is above a threshold then, we accept. This threshold decreases over time. Strategy to proposing a counteroffer is same as BANegotiator
+	Threshold …
+	a. linearly decreases
+	b. asymptotically decreases (y = 1 / x)
+	c. alternates at half max_iterations: linear then, exponential (mean, then nice)
+	d. alternates depending on how slowly opponent is giving in (flexible nice-ness or mean-ness)
+
+2) Always returns preferences as return offer (really mean).
+
+3) Randomly switches 2 items from their offer and returns as new offer (variation of random). Uses (1d) approach to accepting offer.
+
+—
+
+Reference to code:
+1a. LinearNegotiator
+1b. AsymptoticNegotiator
+1c. LinearThenAsymptoticNegotiator
