@@ -146,7 +146,7 @@ class AsymptoticNegotiator(BaseNegotiator):
             return True
         # Adjust the threshold for next time
         else:
-            if self.max_threshold * 1 / (self.past_iters*self.past_iters) < self.min_threshold:
+            if self.max_threshold * 1 / (self.past_iters) < self.min_threshold:
                 self.max_threshold = self.min_threshold
             else:
                 self.max_threshold *= 0.9 * (1 / (self.past_iters))

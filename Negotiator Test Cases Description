@@ -17,3 +17,6 @@ Reference to code:
 1a. LinearNegotiator
 1b. AsymptoticNegotiator
 1c. LinearThenAsymptoticNegotiator
+1d. FlexibleNegotiator
+2. MeanNegotiator
+3. PseudoRandomNegotiator
