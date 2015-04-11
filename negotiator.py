@@ -60,23 +60,23 @@ class BANegotiator(BaseNegotiator):
                     self.offer = offer
                     return offer
 
-        # slope, y_int = self.calc_regression()
-        # r2 = self.calc_r_squared(slope, y_int)
-        # if r2 >= .4 and len(self.their_past_utilities) >= (.3 * self.iter_limit):
-        #     # Here we have a somewhat correlated regression and thus can
-        #     # see a general trend given by the slope
-        #     if slope >= -2:
-        #         # This guy is being a stickler. Only accept if its also really good for me
-        #         if self.should_accept_offer_aggressive(offer):
-        #             return offer
-        #         # Here we should make a smarter counter offer that improves our utility while
-        #         # remaining relatively similar to theirs
-        #     else:
-        #         # Lowering standards. Be aggressive at first but then loosen grip
-        #         if self.past_iters <= .5 * self.iter_limit and self.should_accept_offer_aggressive(offer):
-        #             return offer
-        #         elif self.should_accept_offer_casual(offer):
-        #             return offer
+        slope, y_int = self.calc_regression()
+        r2 = self.calc_r_squared(slope, y_int)
+        if r2 >= .4 and len(self.their_past_utilities) >= (.3 * self.iter_limit):
+            # Here we have a somewhat correlated regression and thus can
+            # see a general trend given by the slope
+            if slope >= -2:
+                # This guy is being a stickler. Only accept if its also really good for me
+                if self.should_accept_offer_aggressive(offer):
+                    return offer
+                # Here we should make a smarter counter offer that improves our utility while
+                # remaining relatively similar to theirs
+            else:
+                # Lowering standards. Be aggressive at first but then loosen grip
+                if self.past_iters <= .5 * self.iter_limit and self.should_accept_offer_aggressive(offer):
+                    return offer
+                elif self.should_accept_offer_casual(offer):
+                    return offer
 
         # If we do not have a trend line then accept at a semi-aggressive rate
         if self.should_accept_offer_casual(offer):

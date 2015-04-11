@@ -123,9 +123,9 @@ class AsymptoticNegotiator(BaseNegotiator):
                 t_expected_util = self.their_expected_utility(ordering)
                 m_expected_util = self.get_utility(ordering)
                 diff = abs(m_expected_util - t_expected_util)
-                if diff <= .3 * abs(m_expected_util) or diff <= .3 * abs(t_expected_util):
+                if (diff <= .3 * abs(m_expected_util) or diff <= .3 * abs(t_expected_util)) and m_expected_util >= t_expected_util and m_expected_util > -len(self.preferences):
                     break
-                elif shuffles > 1000:
+                elif shuffles > 1000 and m_expected_util >= t_expected_util and m_expected_util > len(self.preferences):
                     break
             self.my_past_offers.append(ordering)
             self.my_past_utilities.append(self.get_utility(ordering))
@@ -174,10 +174,17 @@ class AsymptoticNegotiator(BaseNegotiator):
 
     def should_accept_or_not(self, offer):
         util = self.get_utility(offer)
+        t_util = self.their_expected_utility(offer)
+        diff = abs(util - t_util)
+        if (diff <= .35 * abs(util) or diff <= .35 * abs(t_util)) and util >= t_util and util > -len(self.preferences):
+            return True
+
         # Accept if offer is better than what we expected
         if util > self.max_threshold:
             return True
         # Adjust the threshold for next time
+        elif self.theyre_aggressive() and util > self.min_threshold:
+            return True
         else:
             if self.max_threshold * 1 / (self.past_iters) < self.min_threshold:
                 self.max_threshold = self.min_threshold
@@ -206,8 +213,11 @@ class AsymptoticNegotiator(BaseNegotiator):
                 index = i
         prefs = self.their_past_offers[index]
         if prefs is not None:
-            total = len(prefs)
-            return reduce(lambda points, item: points + ((total / (offer.index(item) + 1)) - abs(offer.index(item) - prefs.index(item))), offer, 0)
+            try:
+                total = len(prefs)
+                return reduce(lambda points, item: points + ((total / (offer.index(item) + 1)) - abs(offer.index(item) - prefs.index(item))), offer, 0)
+            except ValueError as e:
+                return 0
         else:
             return 0
 
