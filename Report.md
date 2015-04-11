@@ -6,9 +6,6 @@ Michael Paris (mlp5ab) and Vince Ning (vcn8fn)
 ### Our Agents
 We created a total of 7 negotiating agents thoughout this assignment. Each negotiator has its own negotiation strategy and level of aggression that dictate how willing one is to accept an offer and how aggressive their counter offer will be. We created an external framework file called driver.py that automatically runs a particular agent against all other agents 10 times in a row for each test scenario. Using this driver.py framework we were able to make more data driven decisions as to which strategies work in a particular scenario. The 7 negotiation agents we created are called the **LinearNegotiator, AsymptoticNegotiator, LinearThenAsymptotic, FlexibleNegotiator, MeanNegotiator, PseudoRandomNegotiator, and BANegotiator**.
 
-###### Linear Negotiator
-A negotiator with a linearly decreasing threshold over time when it comes to accepting offers.
-
 ###### Asymptotic Negotiator
 **We think this is our best negotiator and is the one we would like to be submitted for grading**. 
 
@@ -35,6 +32,9 @@ The last thing to note about this negotiator is that in the default case it also
 		
 As you can see, the policy relaxes from right to left and results in a steady decrease in the utility we gain from an offer over time. This policy is aggressive but fair.
 
+###### Linear Negotiator
+A negotiator with a linearly decreasing threshold over time when it comes to accepting offers.
+
 ###### LinearThenAsymptoticNegotiator
 This negotiator is a middle man between the Linear and Asymptotic negotiator. In the first half of a negotiation it relaxes its acceptence criteria at a linear rate and in the second half it relaxes with the function 1/x.
 
@@ -50,16 +50,11 @@ This negotiator creates new offers by swapping two elements at random each time.
 This negotiator was our first attempt to conquer the world. We had big dreams here that ended up not really working like we had hoped. Essentially we were trying to make some sort of sense out of the other bots trend of past offers. To do this we calculated a best fit line and an R^2 value to judge the quality of this fit. If the  fit was strong enough to show some sort of coorelation to a trend we would act accordingly. If we saw a negative trend we took an aggressive accepted policy because we figured it would be better to let the trend take its course so the other bot would have to concede more points before we accepted. If we saw a flat or positive trend we knew the other bot was being aggressive towards us and thus we would need to either try to make a fair offer or be aggressive in return. After running this bot through some tests we created we found that the coorelation data from the trend line was often not reliable with low R^2 values and the insights we wanted to see were not as visible as we hoped.
 
 ---
-### Closing Thoughts
-
-This assignment was to us largely an exercise in discovery through trial and error. Early on in the process, we were throwing many ideas around and discussing potential situations that they may fit well and others that they may not. The best fit line idea we had early on in the process ended up yielding fewer fruits than we had hoped and we were only able to discover this after building it and testing it against scenarios.
-
----
 ### Some Data
 
 ###### tc5.csv
 
-This is an example showing my bot performing against itself in a scenario with perfectly opposite preference lists. To accomodate for this scenario, the bot has learned to accept offers where both parties involved are expected to be getting the same or relatively similar amount of utility from the offer. This was a change that allowed parties with very different preferences to get along. At first we had a tough time handling this scenario as our bots were too aggressive. 
+This is an example showing my bot performing against itself in a scenario with perfectly opposite preference lists. To accomodate for this scenario, the bot has learned to accept offers where both parties involved are expected to be getting the same or relatively similar amount of utility from the offer. This was a change that allowed parties with very different preferences to get along. At first we had a tough time handling this scenario as our bots were too aggressive. This is an interesting data set because it shows how many of the offers were accepted on the first turn in a situation with perfectly opposite preferences. This can happen when the list that our bot is using as its best approximation for the other users preferences is incorrect.
 
 	['plane', 'motorbike', 'computer', 'car', 'tv', 'bike'] None
 	['plane', 'motorbike', 'computer', 'car', 'tv', 'bike'] ['bike', 'tv', 'car', 'computer', 'motorbike', 'plane']
@@ -111,7 +106,7 @@ This is an example showing my bot performing against itself in a scenario with p
 		Negotiator B: 30.999999999999996
 
 ######tc3.csv
-A run of our negotiator against all other negotiators in the pool. Our aggressive but fair strategy leads us to victory but, in a scenario with overlap in preferences, rewards the other player with a few points as well. Our agent beats all our test agents except for the MeanNegotiator. This happens because the Mean Negotiator refuses to accept offers and only offers their preference list thus forcing our bot to accept their preference list when it also satisfies our point threshold.
+A run of our negotiator against all other negotiators in the pool. Our aggressive but fair strategy leads us to victory but, in a scenario with overlap in preferences, rewards the other player with a few points as well. Our agent beats all our test agents except for the MeanNegotiator. This happens because the Mean Negotiator refuses to accept offers and only offers their preference list thus forcing our bot to accept their preference list when it also satisfies our point threshold. In a situation where our preferences may be somewhat closely aligned with the other agent, the results will be more collaborative than violent. Our bot focuses on scoring points more than hurting the other players and thus works well with other bots.
 
 		Summary for AsymptoticNegotiator vs. LinearThenAsymptoticNegotiator
 			Scenario: tc3.csv
@@ -188,3 +183,7 @@ A run of our negotiator against all other negotiators in the pool. Our aggressiv
 		Total Points for A: 1677
 		Total Points for B: 1301
 		
+---
+### Closing Thoughts
+
+This assignment was largely an exercise in discovery through trial and error. Early on in the process, we were throwing many ideas around and discussing potential situations that they may fit well and others that they may not. The best fit line idea we had early on in the process ended up yielding fewer fruits than we had hoped and we were only able to discover this after building it and testing it against scenarios. In the end we wanted a bot that by default would be "relaxingly aggressive" in that it would start with our preferences and then make offers yielding gradually declining in utility. This would give us a good basis to beat weak opponents who might be eager to accept offers. We had to make some changes to handle the case when we were playing aggressive opponents in scenarios with vastly different preference lists which resulted in our scheme to try to guess opponents preferences.
