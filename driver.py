@@ -69,7 +69,7 @@ if __name__ == "__main__":
     negotiators = [BANegotiator, Negotiator, LinearNegotiator, AsymptoticNegotiator, LinearThenAsymptoticNegotiator, FlexibleNegotiator, MeanNegotiator, PseudoRandomNegotiator]
     summary = {}
     for negotiator in negotiators:
-        negotiator_a = BANegotiator()
+        negotiator_a = AsymptoticNegotiator()
         negotiator_b = negotiator()
         namestr = "{} vs. {}".format(negotiator_a.__class__.__name__, negotiator_b.__class__.__name__)
         summary[namestr] = {}
@@ -102,13 +102,21 @@ if __name__ == "__main__":
                 summary[namestr][scenario]['a']['wins'] += 1 if score_a > score_b else 0
                 summary[namestr][scenario]['b']['wins'] += 1 if score_a < score_b else 0
                 print("Round {}: {}\n\t{}: {}\n\t{}: {}".format(i, "Successful" if result else "Failed", negotiator_a.__class__.__name__, points_a, negotiator_b.__class__.__name__, points_b))
-            summary[namestr][scenario]['a']['score'] = score_a
-            summary[namestr][scenario]['b']['score'] = score_b
+            summary[namestr][scenario]['a']['score'] += score_a
+            summary[namestr][scenario]['b']['score'] += score_b
             print("Scenario: {}\n\tFinal result:\n\t{}: {}\n\t{}: {}\n\n".format(scenario, negotiator_a.__class__.__name__,score_a, negotiator_b.__class__.__name__, score_b))
         print("Final result:\n\tNegotiator A: {}\n\tNegotiator B: {}".format(score_a, score_b))
+
+    total_pts_a = 0;
+    total_pts_b = 0;
     for key in summary.keys():
         print("Summary for {}".format(key, summary[key]))
         for scen in summary[key].keys():
+            total_pts_a += int(summary[key][scen]['a']['score'])
+            total_pts_b += int(summary[key][scen]['b']['score'])
             print("\tScenario: {}".format(scen))
             print("\t\tA\n\t\t\tWins: {}\n\t\t\tScore: {}".format(summary[key][scen]['a']['wins'], summary[key][scen]['a']['score']))
             print("\t\tB\n\t\t\tWins: {}\n\t\t\tScore: {}\n".format(summary[key][scen]['b']['wins'], summary[key][scen]['b']['score']))
+    print("Total Points for A: " + str(total_pts_a))
+    print("Total Points for B: " + str(total_pts_b))
+
