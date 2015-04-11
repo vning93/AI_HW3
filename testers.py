@@ -98,6 +98,10 @@ class AsymptoticNegotiator(BaseNegotiator):
             self.min_threshold = 0.1 * self.max_utility
 
         if self.past_iters == self.iter_limit:
+            if self.check_always_accepts_last() and not self.is_A:
+                new_offer = self.preferences[:]
+                self.offer = new_offer
+                return new_offer
             util = self.get_utility(offer)
             # Accept if offer is better than what we expected
             if util > self.min_threshold:
@@ -138,6 +142,18 @@ class AsymptoticNegotiator(BaseNegotiator):
         ordering[-relax_coefficient:] = right_half
         util = self.get_utility(ordering)
         return ordering
+
+    def check_always_accepts_last(self):
+        # If there was ever an instance where they were A and they did not accept on the
+        # the last turn then return False.
+        # NOTE: The self.iter_limit -1 is there because results reports iter_limit - 1 when a
+        # bot accepts an offer on the last turn.
+        if len(self.past_results) == 0:
+            return False
+        for item in self.past_results:
+            if item['was_A'] == False and item['result'] == False and item['iters'] == self.iter_limit-1:
+                return False
+        return True
 
     def should_accept_or_not(self, offer):
         util = self.get_utility(offer)
