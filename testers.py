@@ -113,7 +113,24 @@ class AsymptoticNegotiator(BaseNegotiator):
 
         if self.should_accept_or_not(offer):
             return offer
-
+        elif self.theyre_aggressive():
+            # We have a majority of terrible offers from them. Throw them a bone
+            ordering = self.preferences[:]
+            shuffles = 0
+            while True:
+                shuffle(ordering)
+                shuffles += 1
+                t_expected_util = self.their_expected_utility(ordering)
+                m_expected_util = self.get_utility(ordering)
+                diff = abs(m_expected_util - t_expected_util)
+                if diff <= .3 * abs(m_expected_util) or diff <= .3 * abs(t_expected_util):
+                    break
+                elif shuffles > 1000:
+                    break
+            self.my_past_offers.append(ordering)
+            self.my_past_utilities.append(self.get_utility(ordering))
+            self.offer = ordering[:]
+            return ordering
         else:
             new_offer = self.calc_new_offer()
             self.my_past_offers.append(new_offer)
@@ -167,6 +184,32 @@ class AsymptoticNegotiator(BaseNegotiator):
             else:
                 self.max_threshold *= 0.9 * (1 / (self.past_iters))
             return False
+
+    def theyre_aggressive(self):
+        if len(self.my_past_t_utility) < .5 * self.iter_limit:
+            # Wait till we have some sort of trend data
+            return False
+        negs = 0
+        for util in self.my_past_t_utility:
+            negs += 1 if util < 0 else 0
+        return negs > .7*len(self.my_past_t_utility)
+
+    def their_expected_utility(self, offer):
+        if len(self.their_past_utilities) == 0:
+            return 0
+        prefs = None
+        m = -1
+        index = -1
+        for i, util in enumerate(self.their_past_utilities):
+            if util > m:
+                m = util
+                index = i
+        prefs = self.their_past_offers[index]
+        if prefs is not None:
+            total = len(prefs)
+            return reduce(lambda points, item: points + ((total / (offer.index(item) + 1)) - abs(offer.index(item) - prefs.index(item))), offer, 0)
+        else:
+            return 0
 
 ## 1c ##
 
