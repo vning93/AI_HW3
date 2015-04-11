@@ -67,12 +67,13 @@ if __name__ == "__main__":
     score_a = score_b = 0
     # We will replace Negotiator here with <your id>_Negotiator, as specified in the Readme
     negotiator_a = BANegotiator()
+    negotiator_b = Negotiator()
     # negotiator_b = LinearNegotiator()
     # negotiator_b = AsymptoticNegotiator()
     # negotiator_b = LinearThenAsymptoticNegotiator()
     # negotiator_b = FlexibleNegotiator()
     # negotiator_b = MeanNegotiator()
-    negotiator_b = PseudoRandomNegotiator()
+    # negotiator_b = PseudoRandomNegotiator()
     for scenario in argv[1:]:
         # Get the scenario parameters
         (num_iters, mapping) = read_scenario(scenario)
