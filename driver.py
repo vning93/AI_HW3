@@ -65,7 +65,6 @@ if __name__ == "__main__":
     if len(argv) < 2:
         print("Please provide at least one scenario file, in csv format.")
         exit(-42)
-    score_a = score_b = 0
     # We will replace Negotiator here with <your id>_Negotiator, as specified in the Readme
     negotiators = [BANegotiator, Negotiator, LinearNegotiator, AsymptoticNegotiator, LinearThenAsymptoticNegotiator, FlexibleNegotiator, MeanNegotiator, PseudoRandomNegotiator]
     summary = {}
@@ -75,6 +74,7 @@ if __name__ == "__main__":
         namestr = "{} vs. {}".format(negotiator_a.__class__.__name__, negotiator_b.__class__.__name__)
         summary[namestr] = {}
         for scenario in argv[1:]:
+            score_a = score_b = 0
             # Get the scenario parameters
             (num_iters, mapping) = read_scenario(scenario)
             # Separate the mapping out for each negotiator, and sort the items from it into a list

@@ -23,36 +23,6 @@ class Negotiator(BaseNegotiator):
 
 class BANegotiator(BaseNegotiator):
 
-    def make_offer2(self, offer):
-        new_offer = None
-        if offer is None:
-            self.is_A = True
-            new_offer = self.preferences[:]
-        else:
-            slope, y_int = self.calc_regression()
-            r2 = self.calc_r_squared(slope, y_int)
-            if r2 >= .3 and len(self.their_past_utilities) >= (.3 * self.iter_limit):
-                # We have reasonable fit with enough data points
-                if slope <= -((1/self.iter_limit) * self.max_utility):
-                    if self.should_accept_offer_aggressive(offer):
-                        new_offer = offer
-
-            # Lowering standards. Be aggressive at first but then loosen grip
-            else:
-                if self.past_iters <= .5 * self.iter_limit and self.should_accept_offer_aggressive(offer):
-                    new_offer = offer
-                elif self.should_accept_offer_casual(offer):
-                    new_offer = offer
-                else:
-                    # Make new offer
-                    new_offer = self.calc_new_offer()
-        self.offer = new_offer
-        self.my_past_offers.append(new_offer)
-        self.my_past_utilities.append(self.get_utility(new_offer))
-        self.my_past_t_utility.append(self.get_utility(offer))
-        return new_offer
-
-
     def make_offer(self, offer):
         if offer is None:
             self.is_A = True
@@ -89,27 +59,24 @@ class BANegotiator(BaseNegotiator):
                 if self.get_utility(offer) > 0:
                     self.offer = offer
                     return offer
-                # if self.get_utility(offer) >= (self.max_utility/4):
-                #     self.offer = offer
-                #     return offer
 
-        slope, y_int = self.calc_regression()
-        r2 = self.calc_r_squared(slope, y_int)
-        if r2 >= .4 and len(self.their_past_utilities) >= (.3 * self.iter_limit):
-            # Here we have a somewhat correlated regression and thus can
-            # see a general trend given by the slope
-            if slope >= -2:
-                # This guy is being a stickler. Only accept if its also really good for me
-                if self.should_accept_offer_aggressive(offer):
-                    return offer
-                # Here we should make a smarter counter offer that improves our utility while
-                # remaining relatively similar to theirs
-            else:
-                # Lowering standards. Be aggressive at first but then loosen grip
-                if self.past_iters <= .5 * self.iter_limit and self.should_accept_offer_aggressive(offer):
-                    return offer
-                elif self.should_accept_offer_casual(offer):
-                    return offer
+        # slope, y_int = self.calc_regression()
+        # r2 = self.calc_r_squared(slope, y_int)
+        # if r2 >= .4 and len(self.their_past_utilities) >= (.3 * self.iter_limit):
+        #     # Here we have a somewhat correlated regression and thus can
+        #     # see a general trend given by the slope
+        #     if slope >= -2:
+        #         # This guy is being a stickler. Only accept if its also really good for me
+        #         if self.should_accept_offer_aggressive(offer):
+        #             return offer
+        #         # Here we should make a smarter counter offer that improves our utility while
+        #         # remaining relatively similar to theirs
+        #     else:
+        #         # Lowering standards. Be aggressive at first but then loosen grip
+        #         if self.past_iters <= .5 * self.iter_limit and self.should_accept_offer_aggressive(offer):
+        #             return offer
+        #         elif self.should_accept_offer_casual(offer):
+        #             return offer
 
         # If we do not have a trend line then accept at a semi-aggressive rate
         if self.should_accept_offer_casual(offer):
@@ -198,14 +165,17 @@ class BANegotiator(BaseNegotiator):
                 return False
         return True
 
-
-    def go_aggressive(self):
-        return self.preferences[:]
-
-    def go_casual(self):
-        return self.calc_new_offer()
-
     def calc_new_offer(self):
+        offer = self.preferences[:]
+        still_looking = True
+        while still_looking:
+            shuffle(offer)
+            util = self.get_utility(offer)
+            if util > .4 * self.max_utility:
+                still_looking = False
+        return offer
+
+    def calc_new_offer2(self):
         # We will gradually relax on the offers that we are giving.
         ordering = self.preferences[:]
         relax_coefficient = int(self.relax_factor * self.past_iters) + 1

@@ -155,8 +155,7 @@ class AsymptoticNegotiator(BaseNegotiator):
 ## 1c ##
 
 class LinearThenAsymptoticNegotiator(BaseNegotiator):
-    # Override the make_offer method from BaseNegotiator to accept a given offer 5%
-    # of the time, and return a random permutation the rest of the time.
+
     def make_offer(self, offer):
         if offer is None:
             self.is_A = True
